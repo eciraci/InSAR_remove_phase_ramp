@@ -193,7 +193,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     print(f'# - Num. Cycles -> Rows : {n_cycle_r_min}')
     print(f'# - Num. Cycles -> Columns : {n_cycle_c_min}')
 
-    # - Plot Error Array
+    # - Show Grid-Search Error Array
     fig_0 = plt.figure(figsize=fig_size1)
     ax_0 = fig_0.add_subplot(111)
     ax_0.set_title(r'Mean Absolute Error - '
@@ -202,13 +202,11 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     ax_0.set_ylabel(r'$Y - Num. Cycles$')
     ag_0 = ax_0.pcolormesh(n_cycle_c_vect_f_xx, n_cycle_r_vect_f_yy,
                            error_array_f, cmap=plt.cm.get_cmap('jet'))
-    ax_0.scatter(n_cycle_c_vect_f_xx[ind_min] + s_step / 2,
-                 n_cycle_r_vect_f_yy[ind_min] + s_step / 2,
+    ax_0.scatter(n_cycle_c_vect_f_xx[ind_min],
+                 n_cycle_r_vect_f_yy[ind_min],
                  marker='X', color='m', s=180, label='Minimum MAE')
     cb_0 = plt.colorbar(ag_0)
     cb_0.set_label(label='Rad', weight='bold')
-    cb_0.ax.set_xticks([-np.pi, 0, np.pi])
-    cb_0.ax.set_xticklabels([r'-$\pi$', '0', r'$\pi$'])
     ax_0.legend(loc='best', prop={'size': 16})
     ax_0.grid(color='m', linestyle='dotted', alpha=0.3)
     txt = f'Minimum Error found at: (X={n_cycle_c_min}, Y={n_cycle_r_min})'
