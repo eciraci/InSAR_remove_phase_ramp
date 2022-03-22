@@ -10,7 +10,15 @@ Estimate and Remove a Linear Phase Ramp from Differential Interferograms.
 .. |License| image:: https://img.shields.io/badge/license-MIT-green.svg
    :target: https://github.com/eciraci/ee_insar_test/blob/main/LICENSE
 
+This repository contains a small set of routines that can be used to estimate and remove the contribution of a "Linear Ramp" to the Wrapped Phase of the considered Differential InSAR Interferograms.
 
+**Scripts**:
+
+1. **remove_phase_ramp.py** - Find the Phase Ramp optimal parameters employing a Grid Search approach. A first guess of the ramp parameters - e.g. number of cycles along columns and rows - must be provided by the user.
+
+
+\
+\
 
 
 **PYTHON DEPENDENCIES**:

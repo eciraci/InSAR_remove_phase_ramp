@@ -8,7 +8,7 @@ the differential interferogram provided as input.
 
 A first guess of the spatial frequencies characterizing the phase ramp must be
 provided by the user - see freq_r & freq_c input parameters.
-A GRID-SEARCH around the first guess frequencies is performed to obtain
+A GRID SEARCH around the first guess frequencies is performed to obtain
 the best estimate of the ramp parameters.
 
 COMMAND LINE OPTIONS:
@@ -66,13 +66,13 @@ def estimate_phase_ramp(dd_phase_complex, freq_r: int, freq_c: int,
                         s_step: float = 0.1):
     """
     Estimate a phase ramp from the provided input interferogram
-    :param dd_phase_complex: interferogram pahse expressed as complex array
+    :param dd_phase_complex: interferogram phase expressed as complex array
     :param freq_r: phase ramp frequency along rows
     :param freq_c: phase ramp frequency along columns
     :param slope: phase ramp slope (1: increasing phase, -1: decreasing phase)
-    :param s_radius: grid-search domain radius
-    :param s_step: grid-search step
-    :return: Python dictionary containing the results of the grid-search
+    :param s_radius: grid search domain radius
+    :param s_step: grid search step
+    :return: Python dictionary containing the results of the grid search
     """
     # - Generate synthetic field domain
     array_dim = dd_phase_complex.shape
@@ -140,8 +140,8 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     :param freq_r: phase ramp number of cycles along rows
     :param freq_c: phase ramp number of cycles columns
     :param slope: phase ramp slope (1: increasing phase, -1: decreasing phase)
-    :param s_radius: grid-search domain radius
-    :param s_step: grid-search step
+    :param s_radius: grid search domain radius
+    :param s_step: grid search step
     :return: Python dictionary containing estimated phase rampy and de-ramped
              interferogram.
     """
@@ -173,7 +173,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     n_rows = array_dim[0]
     n_columns = array_dim[1]
 
-    print('# - Running Grid-Search around first guess.')
+    print('# - Running Grid Search around first guess.')
     e_ramp = estimate_phase_ramp(dd_phase_complex, freq_r, freq_c, slope=slope,
                                  s_radius=s_radius, s_step=s_step)
     xx_m = e_ramp['xx_m']
@@ -193,7 +193,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     print(f'# - Num. Cycles -> Rows : {n_cycle_r_min}')
     print(f'# - Num. Cycles -> Columns : {n_cycle_c_min}')
 
-    # - Show Grid-Search Error Array
+    # - Show Grid Search Error Array
     fig_0 = plt.figure(figsize=fig_size1)
     ax_0 = fig_0.add_subplot(111)
     ax_0.set_title(r'Mean Absolute Error - '
@@ -270,7 +270,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
 
     fig_3 = plt.figure(figsize=fig_size2)
     ax_3 = fig_3.add_subplot(121)
-    ax_3.set_title('Input Field', weight='bold')
+    ax_3.set_title('Input Phase Field', weight='bold')
     im_3a = ax_3.pcolormesh(clipped_raster * raster_mask,
                             vmin=-np.pi, vmax=np.pi,
                             cmap=plt.cm.get_cmap('jet'))
@@ -281,7 +281,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     ax_3.grid(color='m', linestyle='dotted', alpha=0.3)
 
     ax_3 = fig_3.add_subplot(122)
-    ax_3.set_title('Input Field - Phase Ramp', weight='bold')
+    ax_3.set_title('Input Phase Field - Phase Ramp', weight='bold')
     im_3b = ax_3.pcolormesh(dd_phase_complex_corrected * raster_mask,
                             cmap=plt.cm.get_cmap('jet'))
     cb_3b = add_colorbar(fig_3, ax_3, im_3b)
@@ -344,13 +344,13 @@ def main():
     parser.add_argument('--slope', '-S',
                         type=float, default=1, choices=[-1, 1],
                         help='Phase Ramp Slope along main axis.')
-    # - Grid-Search Domain Radius
+    # - Grid Search Domain Radius
     parser.add_argument('--s_radius', '-U', type=float, default=2,
-                        help='Grid-Search Radius around the provided '
+                        help='Grid Search Radius around the provided '
                              'reference.')
-    # - Grid-Search Step
+    # - Grid Search Step
     parser.add_argument('--s_step', '-T', type=float, default=0.1,
-                        help='Grid-Search Step.')
+                        help='Grid Search Step.')
 
     args = parser.parse_args()
 
