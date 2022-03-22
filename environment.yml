@@ -1,0 +1,8 @@
+name: InSAR_remove_phase_ramp
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - numpy
+  - rasterio
+  - matplotlib

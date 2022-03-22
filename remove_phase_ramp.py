@@ -3,13 +3,16 @@ u"""
 remove_phase_ramp.py
 Written by Enrico Ciraci' (03/2022)
 
-Estimate and Remove a Linear Phase Ramp (or background fringes) characterizing
-the differential interferogram provided as input.
+Estimate and Remove the contribution of a "Linear Ramp" to the Wrapped Phase
+of a Differential InSAR Interferogram.
 
-A first guess of the spatial frequencies characterizing the phase ramp must be
-provided by the user - see freq_r & freq_c input parameters.
-A GRID-SEARCH around the first guess frequencies is performed to obtain
-the best estimate of the ramp parameters.
+NOTE: In this implementation of the algorithm, a first guess or preliminary
+estimate of the parameters defining the ramp must be provided by the user.
+These parameters include the number of phase cycles characterizing the ramp in
+the X and Y (columns and rows) directions of the input raster.
+
+A GRID SEARCH around the user-defined first guess is performed to obtain the
+best estimate of the ramp parameters.
 
 COMMAND LINE OPTIONS:
 usage: remove_phase_ramp.py [-h] [--slope {-1,1}] [--s_radius S_RADIUS]
@@ -26,6 +29,9 @@ Positional arguments:
 Optional arguments:
   -h, --help            show this help message and exit
   --slope {-1,1}, -S {-1,1} Ramp Slope.
+  --slope_r {-1,1}      Phase Ramp Slope -> Rows-axis.
+  --slope_c {-1,1}      Phase Ramp Slope -> Columnss-axis.
+
   --s_radius S_RADIUS, -U S_RADIUS
               Grid Search Radius around the provided reference.
   --s_step S_STEP, -T S_STEP
@@ -62,17 +68,18 @@ from utils.mpl_utils import add_colorbar
 
 
 def estimate_phase_ramp(dd_phase_complex, freq_r: int, freq_c: int,
-                        slope: int = 1, s_radius: float = 2,
-                        s_step: float = 0.1):
+                        slope_r: int = 1, slope_c: int = 1,
+                        s_radius: float = 2, s_step: float = 0.1):
     """
     Estimate a phase ramp from the provided input interferogram
-    :param dd_phase_complex: interferogram pahse expressed as complex array
+    :param dd_phase_complex: interferogram phase expressed as complex array
     :param freq_r: phase ramp frequency along rows
     :param freq_c: phase ramp frequency along columns
-    :param slope: phase ramp slope (1: increasing phase, -1: decreasing phase)
-    :param s_radius: grid-search domain radius
-    :param s_step: grid-search step
-    :return: Python dictionary containing the results of the grid-search
+    :param slope_r: phase ramp slope sign - rows axis
+    :param slope_c: phase ramp slope sign - columns axis
+    :param s_radius: grid search domain radius
+    :param s_step: grid search step
+    :return: Python dictionary containing the results of the grid search
     """
     # - Generate synthetic field domain
     array_dim = dd_phase_complex.shape
@@ -107,10 +114,10 @@ def estimate_phase_ramp(dd_phase_complex, freq_r: int, freq_c: int,
     for r_count, n_cycle_r in tqdm(enumerate(list(n_cycle_r_vect_f)),
                                    total=len(n_cycle_r_vect_f), ncols=60):
         for c_count, n_cycle_c in enumerate(list(n_cycle_c_vect_f)):
-            synth_real = (2 * np.pi / n_columns) * n_cycle_c * xx_m
-            synth_imag = (2 * np.pi / n_rows) * n_cycle_r * yy_m
+            synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
+            synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
             synth_phase_plane = synth_real + synth_imag
-            synth_complex = np.exp(slope * 1j * synth_phase_plane)
+            synth_complex = np.exp(1j * synth_phase_plane)
 
             # - Compute Complex Conjugate product between the synthetic phase
             # - ramp and the input interferogram.
@@ -132,16 +139,17 @@ def estimate_phase_ramp(dd_phase_complex, freq_r: int, freq_c: int,
 
 
 def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
-                      slope: int = 1, s_radius: float = 2,
-                      s_step: float = 0.1) -> dict:
+                      slope_r: int = 1, slope_c: int = 1,
+                      s_radius: float = 2, s_step: float = 0.1) -> dict:
     """
     Estimate and Remove a phase ramp from the provided input interferogram
     :param path_to_intf: absolute path to input interferogram
     :param freq_r: phase ramp number of cycles along rows
     :param freq_c: phase ramp number of cycles columns
-    :param slope: phase ramp slope (1: increasing phase, -1: decreasing phase)
-    :param s_radius: grid-search domain radius
-    :param s_step: grid-search step
+    :param slope_r: phase ramp slope sign - rows axis
+    :param slope_c: phase ramp slope sign - columns axis
+    :param s_radius: grid search domain radius
+    :param s_step: grid search step
     :return: Python dictionary containing estimated phase rampy and de-ramped
              interferogram.
     """
@@ -173,27 +181,31 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     n_rows = array_dim[0]
     n_columns = array_dim[1]
 
-    print('# - Running Grid-Search around first guess.')
-    e_ramp = estimate_phase_ramp(dd_phase_complex, freq_r, freq_c, slope=slope,
+    print('# - Running Grid Search around first guess.')
+    e_ramp = estimate_phase_ramp(dd_phase_complex, freq_r, freq_c,
+                                 slope_r=slope_r, slope_c=slope_c,
                                  s_radius=s_radius, s_step=s_step)
-    xx_m = e_ramp['xx_m']
-    yy_m = e_ramp['yy_m']
+    xx_m = e_ramp['xx_m']           # - error domain x-grid
+    yy_m = e_ramp['yy_m']           # - error domain y-grid
+    # - error domain N. cycles X direction
     n_cycle_c_vect_f_xx = e_ramp['n_cycle_c_vect_f_xx']
     n_cycle_c_vect_f = e_ramp['n_cycle_c_vect_f']
+    # - error domain N. cycles Y direction
     n_cycle_r_vect_f_yy = e_ramp['n_cycle_r_vect_f_yy']
     n_cycle_r_vect_f = e_ramp['n_cycle_r_vect_f']
+    # - Mean Absolute Error Grid
     error_array_f = e_ramp['error_array_f']
 
-    # - Find location of the Minimum Phase Absolute Error Value
+    # - Find location of the Minimum Absolute Error Value
     ind_min = np.where(error_array_f == np.nanmin(error_array_f))
     n_cycle_c_min = np.round(n_cycle_c_vect_f[ind_min[1]][0], decimals=3)
     n_cycle_r_min = np.round(n_cycle_r_vect_f[ind_min[0]][0], decimals=3)
 
-    print('# - Minimum Found:')
+    print('# - Minimum Found at:')
     print(f'# - Num. Cycles -> Rows : {n_cycle_r_min}')
     print(f'# - Num. Cycles -> Columns : {n_cycle_c_min}')
 
-    # - Plot Error Array
+    # - Show Grid Search Error Array
     fig_0 = plt.figure(figsize=fig_size1)
     ax_0 = fig_0.add_subplot(111)
     ax_0.set_title(r'Mean Absolute Error - '
@@ -202,13 +214,11 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     ax_0.set_ylabel(r'$Y - Num. Cycles$')
     ag_0 = ax_0.pcolormesh(n_cycle_c_vect_f_xx, n_cycle_r_vect_f_yy,
                            error_array_f, cmap=plt.cm.get_cmap('jet'))
-    ax_0.scatter(n_cycle_c_vect_f_xx[ind_min] + s_step / 2,
-                 n_cycle_r_vect_f_yy[ind_min] + s_step / 2,
+    ax_0.scatter(n_cycle_c_vect_f_xx[ind_min],
+                 n_cycle_r_vect_f_yy[ind_min],
                  marker='X', color='m', s=180, label='Minimum MAE')
     cb_0 = plt.colorbar(ag_0)
     cb_0.set_label(label='Rad', weight='bold')
-    cb_0.ax.set_xticks([-np.pi, 0, np.pi])
-    cb_0.ax.set_xticklabels([r'-$\pi$', '0', r'$\pi$'])
     ax_0.legend(loc='best', prop={'size': 16})
     ax_0.grid(color='m', linestyle='dotted', alpha=0.3)
     txt = f'Minimum Error found at: (X={n_cycle_c_min}, Y={n_cycle_r_min})'
@@ -225,10 +235,10 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     # - Compare Estimated Phase Ramp with input interferogram.
     n_cycle_r = n_cycle_r_vect_f[ind_min[0]]
     n_cycle_c = n_cycle_c_vect_f[ind_min[1]]
-    synth_real = (2 * np.pi / n_columns) * n_cycle_c * xx_m
-    synth_imag = (2 * np.pi / n_rows) * n_cycle_r * yy_m
+    synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
+    synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
     synth_phase_plane = synth_real + synth_imag
-    synth_complex = np.exp(slope * 1j * synth_phase_plane)
+    synth_complex = np.exp(1j * synth_phase_plane)
     synth_wrapped = np.angle(synth_complex)
 
     fig_1 = plt.figure(figsize=fig_size2)
@@ -272,7 +282,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
 
     fig_3 = plt.figure(figsize=fig_size2)
     ax_3 = fig_3.add_subplot(121)
-    ax_3.set_title('Input Field', weight='bold')
+    ax_3.set_title('Input Interferogram', weight='bold')
     im_3a = ax_3.pcolormesh(clipped_raster * raster_mask,
                             vmin=-np.pi, vmax=np.pi,
                             cmap=plt.cm.get_cmap('jet'))
@@ -283,7 +293,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     ax_3.grid(color='m', linestyle='dotted', alpha=0.3)
 
     ax_3 = fig_3.add_subplot(122)
-    ax_3.set_title('Input Field - Phase Ramp', weight='bold')
+    ax_3.set_title('Input Phase Field - Phase Ramp', weight='bold')
     im_3b = ax_3.pcolormesh(dd_phase_complex_corrected * raster_mask,
                             cmap=plt.cm.get_cmap('jet'))
     cb_3b = add_colorbar(fig_3, ax_3, im_3b)
@@ -343,22 +353,27 @@ def main():
                         help='Number of Cycles -> Columns-axis.')
 
     # - Phase Ramp Slope: [-1, 1]
-    parser.add_argument('--slope', '-S',
+    parser.add_argument('--slope_r',
                         type=float, default=1, choices=[-1, 1],
-                        help='Phase Ramp Slope along main axis.')
-    # - Grid-Search Domain Radius
+                        help='Phase Ramp Slope -> Rows-axis.')
+    parser.add_argument('--slope_c',
+                        type=float, default=1, choices=[-1, 1],
+                        help='Phase Ramp Slope -> Columnss-axis.')
+
+    # - Grid Search Domain Radius
     parser.add_argument('--s_radius', '-U', type=float, default=2,
-                        help='Grid-Search Radius around the provided '
+                        help='Grid Search Radius around the provided '
                              'reference.')
-    # - Grid-Search Step
+    # - Grid Search Step
     parser.add_argument('--s_step', '-T', type=float, default=0.1,
-                        help='Grid-Search Step.')
+                        help='Grid Search Step.')
 
     args = parser.parse_args()
 
     # - Estimate and remove phase ramp from input interferogram
     remove_phase_ramp(args. path_to_intf, args.freq_r, args.freq_c,
-                      slope=args.slope, s_radius=args.s_radius,
+                      slope_r=args.slope_r, slope_c=args.slope_c,
+                      s_radius=args.s_radius,
                       s_step=args.s_step)
 
 
