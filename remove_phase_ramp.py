@@ -14,6 +14,10 @@ the X and Y (columns and rows) directions of the input raster.
 A GRID SEARCH around the user-defined first guess is performed to obtain the
 best estimate of the ramp parameters.
 
+NOTE: To perform the GRID SEARCH optimization, set  the search radius
+    parameter to a value bigger than zero. See: --s_radius, -R S_RADIUS
+
+
 COMMAND LINE OPTIONS:
 usage: remove_phase_ramp.py [-h] [--slope {-1,1}] [--s_radius S_RADIUS]
                 [--s_step S_STEP] path_to_intf freq_r freq_c
@@ -32,7 +36,7 @@ Optional arguments:
   --slope_r {-1,1}      Phase Ramp Slope -> Rows-axis.
   --slope_c {-1,1}      Phase Ramp Slope -> Columns-axis.
 
-  --s_radius S_RADIUS, -U S_RADIUS
+  --s_radius S_RADIUS, -R S_RADIUS
                         Grid Search Radius around the provided reference
                          -> Default 0.
 
@@ -373,7 +377,7 @@ def main():
                         help='Phase Ramp Slope -> Columnss-axis.')
 
     # - Grid Search Domain Radius
-    parser.add_argument('--s_radius', '-U', type=float, default=0,
+    parser.add_argument('--s_radius', '-R', type=float, default=0,
                         help='Grid Search Radius around the provided '
                              'reference - Default 0.')
     # - Grid Search Step

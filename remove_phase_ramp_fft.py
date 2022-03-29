@@ -186,9 +186,25 @@ def remove_phase_ramp(path_to_intf: str, row_pad: int = 0,
     plt.savefig(out_fig_3, dpi=200, format=fig_format)
     plt.close()
 
+    # - Compare input and output interferogram spectrum
+    igram_fft = np.fft.fft2(dd_phase_complex)
+    est_corr_fft = np.fft.fft2(dd_phase_complex_corrected)
+    plt.figure(figsize=(8, 6))
+    plt.subplot(1, 2, 1)
+    plt.title('Input Interf Power Spectrum\nmagnitude - log', size=9)
+    plt.imshow(np.log(np.abs(igram_fft)), cmap=plt.get_cmap('jet'))
+    plt.subplot(1, 2, 2)
+    plt.title('Ourput Interf Power Spectrumm\nmagnitude - log', size=9)
+    plt.imshow(np.log(np.abs(est_corr_fft)), cmap=plt.get_cmap('jet'))
+    plt.tight_layout()
+    # - save output figure
+    out_fig_4 = path_to_intf.replace('.tiff', '_spectrum_fft.' + fig_format)
+    plt.savefig(out_fig_4, dpi=200, format=fig_format)
+    plt.close()
+
     # - Save the de-ramped interferogram in Geotiff format
     dd_phase_complex_corrected[np.isnan(raster_mask)] = -9999
-    with rasterio.open(path_to_intf, mode="r+") as dataset_c:
+    with rasterio.open(path_to_intf, mode='r+') as dataset_c:
         o_transform = dataset_c.transform
         o_crs = dataset_c.crs
 
@@ -242,4 +258,4 @@ if __name__ == '__main__':
     start_time = datetime.datetime.now()
     main()
     end_time = datetime.datetime.now()
-    print(f"# - Computation Time: {end_time - start_time}")
+    print(f'# - Computation Time: {end_time - start_time}')
