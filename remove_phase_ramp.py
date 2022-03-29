@@ -33,7 +33,9 @@ Optional arguments:
   --slope_c {-1,1}      Phase Ramp Slope -> Columns-axis.
 
   --s_radius S_RADIUS, -U S_RADIUS
-              Grid Search Radius around the provided reference.
+                        Grid Search Radius around the provided reference
+                         -> Default 0.
+
   --s_step S_STEP, -T S_STEP
               Grid Search Step
 
@@ -181,60 +183,67 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     n_rows = array_dim[0]
     n_columns = array_dim[1]
 
-    print('# - Running Grid Search around first guess.')
-    e_ramp = estimate_phase_ramp(dd_phase_complex, freq_r, freq_c,
-                                 slope_r=slope_r, slope_c=slope_c,
-                                 s_radius=s_radius, s_step=s_step)
-    xx_m = e_ramp['xx_m']           # - error domain x-grid
-    yy_m = e_ramp['yy_m']           # - error domain y-grid
-    # - error domain N. cycles X direction
-    n_cycle_c_vect_f_xx = e_ramp['n_cycle_c_vect_f_xx']
-    n_cycle_c_vect_f = e_ramp['n_cycle_c_vect_f']
-    # - error domain N. cycles Y direction
-    n_cycle_r_vect_f_yy = e_ramp['n_cycle_r_vect_f_yy']
-    n_cycle_r_vect_f = e_ramp['n_cycle_r_vect_f']
-    # - Mean Absolute Error Grid
-    error_array_f = e_ramp['error_array_f']
+    if s_radius > 0:
+        print('# - Running Grid Search.')
+        e_ramp = estimate_phase_ramp(dd_phase_complex, freq_r, freq_c,
+                                     slope_r=slope_r, slope_c=slope_c,
+                                     s_radius=s_radius, s_step=s_step)
+        xx_m = e_ramp['xx_m']           # - error domain x-grid
+        yy_m = e_ramp['yy_m']           # - error domain y-grid
+        # - error domain N. cycles X direction
+        n_cycle_c_vect_f_xx = e_ramp['n_cycle_c_vect_f_xx']
+        n_cycle_c_vect_f = e_ramp['n_cycle_c_vect_f']
+        # - error domain N. cycles Y direction
+        n_cycle_r_vect_f_yy = e_ramp['n_cycle_r_vect_f_yy']
+        n_cycle_r_vect_f = e_ramp['n_cycle_r_vect_f']
+        # - Mean Absolute Error Grid
+        error_array_f = e_ramp['error_array_f']
 
-    # - Find location of the Minimum Absolute Error Value
-    ind_min = np.where(error_array_f == np.nanmin(error_array_f))
-    n_cycle_c_min = np.round(n_cycle_c_vect_f[ind_min[1]][0], decimals=3)
-    n_cycle_r_min = np.round(n_cycle_r_vect_f[ind_min[0]][0], decimals=3)
+        # - Find location of the Minimum Absolute Error Value
+        ind_min = np.where(error_array_f == np.nanmin(error_array_f))
+        n_cycle_c_min = np.round(n_cycle_c_vect_f[ind_min[1]][0], decimals=3)
+        n_cycle_r_min = np.round(n_cycle_r_vect_f[ind_min[0]][0], decimals=3)
 
-    print('# - Minimum Found at:')
-    print(f'# - Num. Cycles -> Rows : {n_cycle_r_min}')
-    print(f'# - Num. Cycles -> Columns : {n_cycle_c_min}')
+        print('# - Minimum Found at:')
+        print(f'# - Num. Cycles -> Rows : {n_cycle_r_min}')
+        print(f'# - Num. Cycles -> Columns : {n_cycle_c_min}')
 
-    # - Show Grid Search Error Array
-    fig_0 = plt.figure(figsize=fig_size1)
-    ax_0 = fig_0.add_subplot(111)
-    ax_0.set_title(r'Mean Absolute Error - '
-                   rf'$\Delta Num. Cycles$ = {s_step}', weight='bold')
-    ax_0.set_xlabel(r'$X - Num. Cycles$')
-    ax_0.set_ylabel(r'$Y - Num. Cycles$')
-    ag_0 = ax_0.pcolormesh(n_cycle_c_vect_f_xx, n_cycle_r_vect_f_yy,
-                           error_array_f, cmap=plt.cm.get_cmap('jet'))
-    ax_0.scatter(n_cycle_c_vect_f_xx[ind_min],
-                 n_cycle_r_vect_f_yy[ind_min],
-                 marker='X', color='m', s=180, label='Minimum MAE')
-    cb_0 = plt.colorbar(ag_0)
-    cb_0.set_label(label='Rad', weight='bold')
-    ax_0.legend(loc='best', prop={'size': 16})
-    ax_0.grid(color='m', linestyle='dotted', alpha=0.3)
-    txt = f'Minimum Error found at: (X={n_cycle_c_min}, Y={n_cycle_r_min})'
-    ax_0.annotate(txt, xy=(0.03, 0.03), xycoords="axes fraction",
-                  size=12, zorder=100,
-                  bbox=dict(boxstyle="square", fc="w"))
-    plt.tight_layout()
-    # - Save Error Map
-    out_intf  \
-        = path_to_intf.replace('.tiff', '_MAError_grid_search.' + fig_format)
-    plt.savefig(out_intf, dpi=200, format=fig_format)
-    plt.close()
+        # - Show Grid Search Error Array
+        fig_0 = plt.figure(figsize=fig_size1)
+        ax_0 = fig_0.add_subplot(111)
+        ax_0.set_title(r'Mean Absolute Error - '
+                       rf'$\Delta Num. Cycles$ = {s_step}', weight='bold')
+        ax_0.set_xlabel(r'$X - Num. Cycles$')
+        ax_0.set_ylabel(r'$Y - Num. Cycles$')
+        ag_0 = ax_0.pcolormesh(n_cycle_c_vect_f_xx, n_cycle_r_vect_f_yy,
+                               error_array_f, cmap=plt.cm.get_cmap('jet'))
+        ax_0.scatter(n_cycle_c_vect_f_xx[ind_min],
+                     n_cycle_r_vect_f_yy[ind_min],
+                     marker='X', color='m', s=180, label='Minimum MAE')
+        cb_0 = plt.colorbar(ag_0)
+        cb_0.set_label(label='Rad', weight='bold')
+        ax_0.legend(loc='best', prop={'size': 16})
+        ax_0.grid(color='m', linestyle='dotted', alpha=0.3)
+        txt = f'Minimum Error found at: (X={n_cycle_c_min}, Y={n_cycle_r_min})'
+        ax_0.annotate(txt, xy=(0.03, 0.03), xycoords="axes fraction",
+                      size=12, zorder=100,
+                      bbox=dict(boxstyle="square", fc="w"))
+        plt.tight_layout()
+        # - Save Error Map
+        out_intf  \
+            = path_to_intf.replace('.tiff', '_MAError_grid_search.' + fig_format)
+        plt.savefig(out_intf, dpi=200, format=fig_format)
+        plt.close()
 
-    # - Compare Estimated Phase Ramp with input interferogram.
-    n_cycle_r = n_cycle_r_vect_f[ind_min[0]]
-    n_cycle_c = n_cycle_c_vect_f[ind_min[1]]
+        # - Compare Estimated Phase Ramp with input interferogram.
+        n_cycle_r = n_cycle_r_vect_f[ind_min[0]]
+        n_cycle_c = n_cycle_c_vect_f[ind_min[1]]
+    else:
+        # - Integration Domain used to define the phase ramp
+        xx_m, yy_m = np.meshgrid(np.arange(n_columns), np.arange(n_rows))
+        n_cycle_c = freq_c
+        n_cycle_r = freq_r
+
     synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
     synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
     synth_phase_plane = synth_real + synth_imag
@@ -262,8 +271,11 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     cb_2.ax.set_xticks([-np.pi, 0, np.pi])
     cb_2.ax.set_xticklabels([r'-$\pi$', '0', r'$\pi$'])
     ax_2.grid(color='m', linestyle='dotted', alpha=0.3)
+    if s_radius:
+        txt = f'Number of Cycles: \n(X={n_cycle_c_min}, Y={n_cycle_r_min})'
+    else:
+        txt = f'Number of Cycles: \n(X={n_cycle_c}, Y={n_cycle_r})'
 
-    txt = f'Number of Cycles: \n(X={n_cycle_c_min}, Y={n_cycle_r_min})'
     ax_2.annotate(txt, xy=(0.03, 0.03), xycoords="axes fraction",
                   size=12, zorder=100,
                   bbox=dict(boxstyle="square", fc="w"))
@@ -361,9 +373,9 @@ def main():
                         help='Phase Ramp Slope -> Columnss-axis.')
 
     # - Grid Search Domain Radius
-    parser.add_argument('--s_radius', '-U', type=float, default=2,
+    parser.add_argument('--s_radius', '-U', type=float, default=0,
                         help='Grid Search Radius around the provided '
-                             'reference.')
+                             'reference - Default 0.')
     # - Grid Search Step
     parser.add_argument('--s_step', '-T', type=float, default=0.1,
                         help='Grid Search Step.')

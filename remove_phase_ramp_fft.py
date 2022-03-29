@@ -79,11 +79,11 @@ def estimate_phase_ramp(igram_cpx: np.ndarray,
     phase_ramp = np.fft.ifft2(est_synth)
 
     # - Remove padding from the estimated phase ramp
-    if row_pad == 0 & col_pad == 0:
+    if row_pad == 0 and col_pad == 0:
         phase_ramp = phase_ramp[:, :]
-    elif row_pad == 0 & col_pad != 0:
+    elif row_pad == 0 and col_pad != 0:
         phase_ramp = phase_ramp[:, col_pad:-col_pad]
-    elif row_pad != 0 & col_pad == 0:
+    elif row_pad != 0 and col_pad == 0:
         phase_ramp = phase_ramp[row_pad:-row_pad, :]
     else:
         phase_ramp = phase_ramp[row_pad:-row_pad, col_pad:-col_pad]
@@ -223,12 +223,19 @@ def main():
     # - Positional Arguments
     parser.add_argument('path_to_intf', type=str,
                         help='Absolute path to input interferogram.')
+    # - Zero Padding
+    parser.add_argument('--row_pad', '-R',
+                        type=int, default=0,
+                        help='Zero Padding - Rows.')
+    parser.add_argument('--col_pad', '-C',
+                        type=int, default=0,
+                        help='Zero Padding - Columns.')
 
     args = parser.parse_args()
 
     # - Processing Parameters
     path_to_intf = args.path_to_intf
-    remove_phase_ramp(path_to_intf)
+    remove_phase_ramp(path_to_intf, row_pad=args.row_pad, col_pad=args.col_pad)
 
 
 if __name__ == '__main__':
