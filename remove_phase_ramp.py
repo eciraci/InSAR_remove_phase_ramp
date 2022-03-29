@@ -30,7 +30,7 @@ Optional arguments:
   -h, --help            show this help message and exit
   --slope {-1,1}, -S {-1,1} Ramp Slope.
   --slope_r {-1,1}      Phase Ramp Slope -> Rows-axis.
-  --slope_c {-1,1}      Phase Ramp Slope -> Columnss-axis.
+  --slope_c {-1,1}      Phase Ramp Slope -> Columns-axis.
 
   --s_radius S_RADIUS, -U S_RADIUS
               Grid Search Radius around the provided reference.
@@ -67,9 +67,9 @@ from tqdm import tqdm
 from utils.mpl_utils import add_colorbar
 
 
-def estimate_phase_ramp(dd_phase_complex, freq_r: int, freq_c: int,
+def estimate_phase_ramp(dd_phase_complex: np.ndarray, freq_r: int, freq_c: int,
                         slope_r: int = 1, slope_c: int = 1,
-                        s_radius: float = 2, s_step: float = 0.1):
+                        s_radius: float = 2, s_step: float = 0.1) -> dict:
     """
     Estimate a phase ramp from the provided input interferogram
     :param dd_phase_complex: interferogram phase expressed as complex array
