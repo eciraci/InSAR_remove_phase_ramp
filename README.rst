@@ -16,6 +16,8 @@ This repository contains a small set of routines that can be used to estimate an
 
 1. **remove_phase_ramp.py** - Find the Phase Ramp optimal parameters employing a Grid Search approach. A first guess of the ramp parameters - e.g. number of cycles along columns and rows - must be provided by the user.
 
+2. **remove_phase_ramp_fft.py** - Estimate the Linear Phase Ramp in the Frequency Domain as the maximum value of the Power Spectrum of the Signal.
+
 
 \
 \
