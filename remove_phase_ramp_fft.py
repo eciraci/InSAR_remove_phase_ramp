@@ -107,7 +107,7 @@ def remove_phase_ramp(path_to_intf: str, row_pad: int = 0,
     with rasterio.open(path_to_intf, mode="r+") as dataset_c:
         # - Read Input Raster and Binary Mask
         intf_phase = np.array(dataset_c.read(1),
-                                  dtype=dataset_c.dtypes[0])
+                              dtype=dataset_c.dtypes[0])
         # - Define Valid data mask
         raster_mask = np.array(dataset_c.read_masks(1),
                                dtype=dataset_c.dtypes[0])
@@ -121,10 +121,11 @@ def remove_phase_ramp(path_to_intf: str, row_pad: int = 0,
     rmp = estimate_phase_ramp(dd_phase_complex,
                               row_pad=row_pad, col_pad=col_pad)
     phase_ramp = rmp['phase_ramp']
+    # - Extract wrapped phase
     ingram_ramp = np.angle(phase_ramp)
 
-    # - Remove the estimated phase ramp from the input phase field.
-    # - Compute the complex conjugate product between the input phase
+    # - Remove the estimated phase ramp from the input phase field by
+    # - computing the complex conjugate product between the input phase
     # - field and the estimated ramp.
     dd_phase_complex_corrected = np.angle(dd_phase_complex
                                           * np.conjugate(phase_ramp))
