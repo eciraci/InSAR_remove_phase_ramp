@@ -10,7 +10,11 @@ Estimate and Remove a Linear Phase Ramp from Differential Interferograms.
 .. |License| image:: https://img.shields.io/badge/license-MIT-green.svg
    :target: https://github.com/eciraci/ee_insar_test/blob/main/LICENSE
 
-This repository contains a small set of routines that can be used to estimate and remove the contribution of a "Linear Ramp" to the Wrapped Phase of the considered Differential InSAR Interferograms.
+Estimate and remove the contribution of a *Linear Ramp* to the **Wrapped Phase** of the considered Differential InSAR Interferograms.
+
+.. image:: data/diff_ingram_test_deramped.jpeg
+   :width: 50%
+   :align: center
 
 **Scripts**:
 
@@ -18,6 +22,9 @@ This repository contains a small set of routines that can be used to estimate an
 
 2. **remove_phase_ramp_fft.py** - Estimate the Linear Phase Ramp in the Frequency Domain as the maximum value of the Power Spectrum of the Signal.
 
+**Install Pytho Dependencies**:
+
+    >> pip install -r requirements.txt
 
 \
 \

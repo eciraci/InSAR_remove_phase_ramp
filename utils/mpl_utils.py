@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def add_colorbar(fig: plt.figure(), ax: plt.Axes,
+def add_colorbar(fig: plt.figure, ax: plt.Axes,
                  im: plt.pcolormesh) -> plt.colorbar:
     """
     Add colorbar to the selected plt.Axes.
