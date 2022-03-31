@@ -20,15 +20,15 @@ NOTE: To perform the GRID SEARCH optimization, set  the search radius
 
 COMMAND LINE OPTIONS:
 usage: remove_phase_ramp.py [-h] [--slope {-1,1}] [--s_radius S_RADIUS]
-                [--s_step S_STEP] path_to_intf freq_r freq_c
+                [--s_step S_STEP] path_to_intf cycle_r cycle_c
 
 Estimate and Remove Linear Phase Ramp characterizing the
 considered Differential Interferogram.
 
 Positional arguments:
   path_to_intf          Absolute path to input interferogram.
-  freq_r                Number of Cycles -> Rows-axis.
-  freq_c                Number of Cycles -> Columns-axis.
+  cycle_r                Number of Cycles -> Rows-axis.
+  cycle_c                Number of Cycles -> Columns-axis.
 
 Optional arguments:
   -h, --help            show this help message and exit
@@ -73,14 +73,14 @@ from tqdm import tqdm
 from utils.mpl_utils import add_colorbar
 
 
-def estimate_phase_ramp(dd_phase_complex: np.ndarray, freq_r: int, freq_c: int,
+def estimate_phase_ramp(dd_phase_complex: np.ndarray, cycle_r: int, cycle_c: int,
                         slope_r: int = 1, slope_c: int = 1,
                         s_radius: float = 2, s_step: float = 0.1) -> dict:
     """
     Estimate a phase ramp from the provided input interferogram
     :param dd_phase_complex: interferogram phase expressed as complex array
-    :param freq_r: phase ramp frequency along rows
-    :param freq_c: phase ramp frequency along columns
+    :param cycle_r: phase ramp number of cycles along rows
+    :param cycle_c: phase ramp number of cycles along columns
     :param slope_r: phase ramp slope sign - rows axis
     :param slope_c: phase ramp slope sign - columns axis
     :param s_radius: grid search domain radius
@@ -97,19 +97,19 @@ def estimate_phase_ramp(dd_phase_complex: np.ndarray, freq_r: int, freq_c: int,
     # - Integration Domain used to define the phase ramp
     xx_m, yy_m = np.meshgrid(np.arange(n_columns), np.arange(n_rows))
 
-    if freq_r - s_radius <= 0:
-        n_cycle_r_vect_f = np.arange(s_step, freq_r + s_radius + s_step,
+    if cycle_r - s_radius <= 0:
+        n_cycle_r_vect_f = np.arange(s_step, cycle_r + s_radius + s_step,
                                      s_step)
     else:
-        n_cycle_r_vect_f = np.arange(freq_r - s_radius,
-                                     freq_r + s_radius + s_step,
+        n_cycle_r_vect_f = np.arange(cycle_r - s_radius,
+                                     cycle_r + s_radius + s_step,
                                      s_step)
-    if freq_c - s_radius <= 0:
-        n_cycle_c_vect_f = np.arange(s_step, freq_c + s_radius + s_step,
+    if cycle_c - s_radius <= 0:
+        n_cycle_c_vect_f = np.arange(s_step, cycle_c + s_radius + s_step,
                                      s_step)
     else:
-        n_cycle_c_vect_f = np.arange(freq_c - s_radius,
-                                     freq_c + s_radius + s_step,
+        n_cycle_c_vect_f = np.arange(cycle_c - s_radius,
+                                     cycle_c + s_radius + s_step,
                                      s_step)
 
     # - Create Grid Search Domain
@@ -144,14 +144,14 @@ def estimate_phase_ramp(dd_phase_complex: np.ndarray, freq_r: int, freq_c: int,
            }
 
 
-def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
+def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
                       slope_r: int = 1, slope_c: int = 1,
                       s_radius: float = 2, s_step: float = 0.1) -> dict:
     """
     Estimate and Remove a phase ramp from the provided input interferogram
     :param path_to_intf: absolute path to input interferogram
-    :param freq_r: phase ramp number of cycles along rows
-    :param freq_c: phase ramp number of cycles columns
+    :param cycle_r: phase ramp number of cycles along rows
+    :param cycle_c: phase ramp number of cycles columns
     :param slope_r: phase ramp slope sign - rows axis
     :param slope_c: phase ramp slope sign - columns axis
     :param s_radius: grid search domain radius
@@ -160,8 +160,8 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
              interferogram.
     """
     print('# - Provided First Guess:')
-    print(f'# - Num. Cycles -> Rows : {freq_r}')
-    print(f'# - Num. Cycles -> Columns : {freq_c}\n')
+    print(f'# - Num. Cycles -> Rows : {cycle_r}')
+    print(f'# - Num. Cycles -> Columns : {cycle_c}\n')
 
     # - Figure Parameters - Not Editable
     fig_size1 = (10, 8)
@@ -189,7 +189,7 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
 
     if s_radius > 0:
         print('# - Running Grid Search.')
-        e_ramp = estimate_phase_ramp(dd_phase_complex, freq_r, freq_c,
+        e_ramp = estimate_phase_ramp(dd_phase_complex, cycle_r, cycle_c,
                                      slope_r=slope_r, slope_c=slope_c,
                                      s_radius=s_radius, s_step=s_step)
         xx_m = e_ramp['xx_m']           # - error domain x-grid
@@ -245,8 +245,8 @@ def remove_phase_ramp(path_to_intf: str, freq_r: int, freq_c: int,
     else:
         # - Integration Domain used to define the phase ramp
         xx_m, yy_m = np.meshgrid(np.arange(n_columns), np.arange(n_rows))
-        n_cycle_c = freq_c
-        n_cycle_r = freq_r
+        n_cycle_c = cycle_c
+        n_cycle_r = cycle_r
 
     synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
     synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
@@ -361,11 +361,11 @@ def main():
                         help='Absolute path to input interferogram.')
 
     # - Ramp Frequency - Rows-axis - FIRST GUESS
-    parser.add_argument('freq_r', type=float, default=None,
+    parser.add_argument('cycle_r', type=float, default=None,
                         help='Number of Cycles -> Rows-axis.')
 
     # - Ramp Frequency - Columns-axis - FIRST GUESS
-    parser.add_argument('freq_c', type=float, default=None,
+    parser.add_argument('cycle_c', type=float, default=None,
                         help='Number of Cycles -> Columns-axis.')
 
     # - Phase Ramp Slope: [-1, 1]
@@ -387,7 +387,7 @@ def main():
     args = parser.parse_args()
 
     # - Estimate and remove phase ramp from input interferogram
-    remove_phase_ramp(args. path_to_intf, args.freq_r, args.freq_c,
+    remove_phase_ramp(args. path_to_intf, args.cycle_r, args.cycle_c,
                       slope_r=args.slope_r, slope_c=args.slope_c,
                       s_radius=args.s_radius,
                       s_step=args.s_step)
