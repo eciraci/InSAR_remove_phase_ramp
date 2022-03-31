@@ -4,6 +4,9 @@ data/.DS_Store
 # pycharm settings files
 .idea/
 
+# Qgis
+*.aux.xml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
