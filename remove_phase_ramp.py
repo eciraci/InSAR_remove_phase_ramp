@@ -186,6 +186,9 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     array_dim = dd_phase_complex.shape
     n_rows = array_dim[0]
     n_columns = array_dim[1]
+    # - Initialize Number of Cycles Minimum
+    n_cycle_r_min = cycle_r
+    n_cycle_c_min = cycle_c
 
     if s_radius > 0:
         print('# - Running Grid Search.')
@@ -276,9 +279,11 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     cb_2.ax.set_xticklabels([r'-$\pi$', '0', r'$\pi$'])
     ax_2.grid(color='m', linestyle='dotted', alpha=0.3)
     if s_radius:
-        txt = f'Number of Cycles: \n(X={n_cycle_c_min}, Y={n_cycle_r_min})'
+        txt = f'Number of Cycles: \n(X={n_cycle_c_min}, Y={n_cycle_r_min}) ' \
+              f'\n Slope R. {slope_r}, Slope C. {slope_c}'
     else:
-        txt = f'Number of Cycles: \n(X={n_cycle_c}, Y={n_cycle_r})'
+        txt = f'Number of Cycles: \n(X={n_cycle_c}, Y={n_cycle_r}) ' \
+              f'\n Slope R. {slope_r}, Slope C. {slope_c}'
 
     ax_2.annotate(txt, xy=(0.03, 0.03), xycoords="axes fraction",
                   size=12, zorder=100,
@@ -336,7 +341,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
                        height=dd_phase_complex_corrected.shape[0],
                        width=dd_phase_complex_corrected.shape[1],
                        count=1, dtype=rasterio.float32,
-                       crs=o_crs, transform=o_transform,
+                       crs=o_crs, transform=o_transform, compress='lzw',
                        nodata=-9999) as dst:
         dst.write(dd_phase_complex_corrected, 1)
 
