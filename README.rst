@@ -22,7 +22,7 @@ Estimate and remove the contribution of a *Linear Ramp* to the **Wrapped Phase**
 
 2. **remove_phase_ramp_fft.py** - Estimate the Linear Phase Ramp in the Frequency Domain as the maximum value of the Power Spectrum of the Signal.
 
-**Install Pytho Dependencies**:
+**Install Python Dependencies**:
 
     >> pip install -r requirements.txt
 
