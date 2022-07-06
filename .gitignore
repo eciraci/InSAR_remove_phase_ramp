@@ -4,6 +4,9 @@ data/.DS_Store
 # pycharm settings files
 .idea/
 
+# icloud files
+*.icloud
+
 # Qgis
 *.aux.xml
 

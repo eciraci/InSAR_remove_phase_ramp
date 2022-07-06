@@ -73,6 +73,28 @@ from tqdm import tqdm
 from utils.mpl_utils import add_colorbar
 
 
+def synth_plane(slope_c: int, slope_r: float, n_columns: int, n_rows: int,
+                n_cycle_c: float, n_cycle_r: float, xx_m: np.ndarray, yy_m: np.ndarray) -> np.ndarray:
+    """
+    Return phase ramp generated with the selected parameters
+    :param slope_c: phase slope, columns - x-axis [1, -1]
+    :param slope_r: phase slope, rows - y-axis [1, -1]
+    :param n_columns: phase plan number of columns
+    :param n_rows: phase plane number of rows
+    :param n_cycle_c: number of cycles, columns - x-axis
+    :param n_cycle_r: number of cycles, rows - y-axis
+    :param xx_m: domain x-grid
+    :param yy_m: domain y-grid
+    :return: synthetic phase plan
+    """
+    synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
+    synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
+    synth_phase_plane = synth_real + synth_imag
+    synth_complex = np.exp(1j * synth_phase_plane)
+
+    return synth_complex
+
+
 def estimate_phase_ramp(dd_phase_complex: np.ndarray, cycle_r: int, cycle_c: int,
                         slope_r: int = 1, slope_c: int = 1,
                         s_radius: float = 2, s_step: float = 0.1) -> dict:
@@ -120,10 +142,8 @@ def estimate_phase_ramp(dd_phase_complex: np.ndarray, cycle_r: int, cycle_c: int
     for r_count, n_cycle_r in tqdm(enumerate(list(n_cycle_r_vect_f)),
                                    total=len(n_cycle_r_vect_f), ncols=60):
         for c_count, n_cycle_c in enumerate(list(n_cycle_c_vect_f)):
-            synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
-            synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
-            synth_phase_plane = synth_real + synth_imag
-            synth_complex = np.exp(1j * synth_phase_plane)
+            synth_complex = synth_plane(slope_c, slope_r, n_columns, n_rows,
+                                        n_cycle_c, n_cycle_r, xx_m, yy_m)
 
             # - Compute Complex Conjugate product between the synthetic phase
             # - ramp and the input interferogram.
@@ -156,8 +176,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     :param slope_c: phase ramp slope sign - columns axis
     :param s_radius: grid search domain radius
     :param s_step: grid search step
-    :return: Python dictionary containing estimated phase rampy and de-ramped
-             interferogram.
+    :return: Python dictionary containing estimated phase rampy and de-ramped interferogram.
     """
     print('# - Provided First Guess:')
     print(f'# - Num. Cycles -> Rows : {cycle_r}')
@@ -251,11 +270,10 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
         n_cycle_c = cycle_c
         n_cycle_r = cycle_r
 
-    synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
-    synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
-    synth_phase_plane = synth_real + synth_imag
-    synth_complex = np.exp(1j * synth_phase_plane)
-    synth_wrapped = np.angle(synth_complex)
+    # - Generate synthetic phase ramp
+    synth_complex = synth_plane(slope_c, slope_r, n_columns, n_rows,
+                                n_cycle_c, n_cycle_r, xx_m, yy_m)
+    synth_wrapped = np.angle(synth_complex)     # - Wrap phase ramp
 
     fig_1 = plt.figure(figsize=fig_size2)
     ax_1 = fig_1.add_subplot(121)
@@ -379,7 +397,7 @@ def main():
                         help='Phase Ramp Slope -> Rows-axis.')
     parser.add_argument('--slope_c',
                         type=float, default=1, choices=[-1, 1],
-                        help='Phase Ramp Slope -> Columnss-axis.')
+                        help='Phase Ramp Slope -> Columns-axis.')
 
     # - Grid Search Domain Radius
     parser.add_argument('--s_radius', '-R', type=float, default=0,
