@@ -87,6 +87,10 @@ def synth_plane(slope_c: int, slope_r: float, n_columns: int, n_rows: int,
     :param yy_m: domain y-grid
     :return: synthetic phase plan
     """
+    if not isinstance(n_columns, int) or not isinstance(n_rows, int):
+        raise TypeError("n_columns and n_rows must be integers")
+    if xx_m.shape != yy_m.shape:
+        raise ValueError("xx_m and yy_m must have the same shape")
     synth_real = slope_c * (2 * np.pi / n_columns) * n_cycle_c * xx_m
     synth_imag = slope_r * (2 * np.pi / n_rows) * n_cycle_r * yy_m
     synth_phase_plane = synth_real + synth_imag

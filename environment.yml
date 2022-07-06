@@ -6,3 +6,5 @@ dependencies:
   - numpy
   - rasterio
   - matplotlib
+  - pytest
+  - pytest-cov

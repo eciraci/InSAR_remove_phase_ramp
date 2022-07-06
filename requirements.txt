@@ -2,3 +2,5 @@ tqdm
 numpy
 matplotlib
 rasterio
+pytest
+pytest-cov
