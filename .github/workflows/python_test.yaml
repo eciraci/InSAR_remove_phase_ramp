@@ -21,7 +21,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ hashFiles('setup.py') }}--${{ hashFiles('requirements.txt') }}
+          key: ${{ hashFiles('setup.py') }}-.-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies for the considered OS
         run: |
@@ -30,6 +30,7 @@ jobs:
           pip install flake8
           pip install pytest
           pip install pytest-cov
+
       - name: Display Python version
         run: python --version
 
