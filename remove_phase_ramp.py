@@ -74,7 +74,8 @@ from utils.mpl_utils import add_colorbar
 
 
 def synth_plane(slope_c: int, slope_r: float, n_columns: int, n_rows: int,
-                n_cycle_c: float, n_cycle_r: float, xx_m: np.ndarray, yy_m: np.ndarray) -> np.ndarray:
+                n_cycle_c: float, n_cycle_r: float, xx_m: np.ndarray,
+                yy_m: np.ndarray) -> np.ndarray:
     """
     Return phase ramp generated with the selected parameters
     :param slope_c: phase slope, columns - x-axis [1, -1]
@@ -185,7 +186,8 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     :param slope_c: phase ramp slope sign - columns axis
     :param s_radius: grid search domain radius
     :param s_step: grid search step
-    :return: Python dictionary containing estimated phase rampy and de-ramped interferogram.
+    :return: Python dictionary containing estimated phase rampy
+            and de-ramped interferogram.
     """
     print('# - Provided First Guess:')
     print(f'# - Num. Cycles -> Rows : {cycle_r}')
