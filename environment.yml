@@ -3,6 +3,9 @@ channels:
   - conda-forge
 dependencies:
   - pip
+  - tqdm
   - numpy
   - rasterio
   - matplotlib
+  - pytest
+  - pytest-cov
