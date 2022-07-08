@@ -12,13 +12,16 @@ Phase** of the considered Differential InSAR Interferograms.
 
 ## **Scripts**:
 
-1.  **remove_phase_ramp.py** - Find the Phase Ramp optimal parameters
+1. **remove_phase_ramp.py** - Find the Phase Ramp optimal parameters
     employing a Grid Search approach. A first guess of the ramp
     parameters - e.g. number of cycles along columns and rows - must be
     provided by the user.
-2.  **remove_phase_ramp_fft.py** - Estimate the Linear Phase Ramp in the
+
+2. **remove_phase_ramp_fft.py** - Estimate the Linear Phase Ramp in the
     Frequency Domain as the maximum value of the Power Spectrum of the
     Signal.
+
+## **Scripts**:
 
 **Install Python Dependencies**:
 
@@ -28,6 +31,7 @@ Phase** of the considered Differential InSAR Interferograms.
 -   [numpy: The fundamental package for scientific computing with Python.][]
 -   [rasterio: access to geospatial raster data.][]
 -   [matplotlib: Library for creating static, animated, and interactive visualizations in Python.][]
+
 
 # License
 

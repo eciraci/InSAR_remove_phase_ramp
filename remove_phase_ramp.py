@@ -99,7 +99,8 @@ def synth_plane(slope_c: int, slope_r: float, n_columns: int, n_rows: int,
     return synth_complex
 
 
-def estimate_phase_ramp(dd_phase_complex: np.ndarray, cycle_r: int, cycle_c: int,
+def estimate_phase_ramp(dd_phase_complex: np.ndarray,
+                        cycle_r: float, cycle_c: float,
                         slope_r: int = 1, slope_c: int = 1,
                         s_radius: float = 2, s_step: float = 0.1) -> dict:
     """
@@ -113,6 +114,10 @@ def estimate_phase_ramp(dd_phase_complex: np.ndarray, cycle_r: int, cycle_c: int
     :param s_step: grid search step
     :return: Python dictionary containing the results of the grid search
     """
+    if s_radius <= 0:
+        raise ValueError("Search Radius [s_radius] must be a positive value.")
+    if s_step <= 0:
+        raise ValueError("Search Step [s_step] must be a positive value.")
     # - Generate synthetic field domain
     array_dim = dd_phase_complex.shape
     n_rows = array_dim[0]
