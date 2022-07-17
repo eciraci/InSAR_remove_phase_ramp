@@ -23,7 +23,17 @@ Phase** of the considered Differential InSAR Interferograms.
 
 ## **Scripts**:
 
-**Install Python Dependencies**:
+### **Installation**:
+
+**Install Python Dependencies with Miniconda**:
+
+1. Setup minimal **conda** installation using [Miniconda][]
+
+2. Create Python Virtual Environment
+    -   Creating an environment with commands ([Link][3]);
+    -   Creating an environment from an environment.yml file ([Link][4]);
+
+**Install Python Dependencies with pip**:
 
 > pip install -r requirements.txt
 
@@ -31,7 +41,7 @@ Phase** of the considered Differential InSAR Interferograms.
 -   [numpy: The fundamental package for scientific computing with Python.][]
 -   [rasterio: access to geospatial raster data.][]
 -   [matplotlib: Library for creating static, animated, and interactive visualizations in Python.][]
-
+-   [tqdm: A Fast, Extensible Progress Bar for Python and CLI.][]
 
 # License
 
@@ -43,10 +53,13 @@ under the [MIT license][].
   [1]: ..%20image::%20https://www.python.org/
   [License]: https://img.shields.io/badge/license-MIT-green.svg
   [2]: https://github.com/eciraci/ee_insar_test/blob/main/LICENSE
-  [numpy: The fundamental package for scientific computing with Python]:
+  [3]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
+  [4]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file
+  [numpy: The fundamental package for scientific computing with Python.]:
     https://numpy.org
-  [rasterio: access to geospatial raster data]: https://rasterio.readthedocs.io
+  [rasterio: access to geospatial raster data.]: https://rasterio.readthedocs.io
   [matplotlib: Library for creating static, animated, and interactive visualizations in Python.]:
     https://matplotlib.org
+  [tqdm: A Fast, Extensible Progress Bar for Python and CLI.]: https://github.com/tqdm/tqdm
   [Creative Commons Attribution 4.0 Attribution license]: https://creativecommons.org/licenses/by/4.0/
   [MIT license]: LICENSE
