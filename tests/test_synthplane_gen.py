@@ -1,7 +1,8 @@
+#!/usr/bin/env python
+import sys
 import numpy as np
 import pytest
-import sys
-# setting path
+# add parent directory to system path
 sys.path.append('..')
 from remove_phase_ramp import synth_plane, estimate_phase_ramp
 
