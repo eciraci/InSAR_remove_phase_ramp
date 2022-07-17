@@ -7,6 +7,9 @@ data/.DS_Store
 # icloud files
 *.icloud
 
+# geotiff
+*.tiff
+
 # Qgis
 *.aux.xml
 
