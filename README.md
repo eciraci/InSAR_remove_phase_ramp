@@ -27,7 +27,7 @@ Phase** of the considered Differential InSAR Interferograms.
 
 **Install Python Dependencies with Miniconda**:
 
-1. Setup minimal **conda** installation using [Miniconda][]
+1. Setup minimal **conda** installation using [Miniconda][5]
 
 2. Create Python Virtual Environment
     -   Creating an environment with commands ([Link][3]);
@@ -55,6 +55,7 @@ under the [MIT license][].
   [2]: https://github.com/eciraci/ee_insar_test/blob/main/LICENSE
   [3]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
   [4]: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file
+  [5]: https://docs.conda.io/en/latest/miniconda.html
   [numpy: The fundamental package for scientific computing with Python.]:
     https://numpy.org
   [rasterio: access to geospatial raster data.]: https://rasterio.readthedocs.io
