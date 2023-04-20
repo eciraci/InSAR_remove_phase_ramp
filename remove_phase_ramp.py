@@ -72,8 +72,6 @@ from tqdm import tqdm
 # - program dependencies
 from utils.mpl_utils import add_colorbar
 
-import matplotlib as mpl
-mpl.use('TkAgg')
 
 def synth_plane(slope_c: int, slope_r: float, n_columns: int, n_rows: int,
                 n_cycle_c: float, n_cycle_r: float, xx_m: np.ndarray,
