@@ -72,6 +72,8 @@ from tqdm import tqdm
 # - program dependencies
 from utils.mpl_utils import add_colorbar
 
+import matplotlib as mpl
+mpl.use('TkAgg')
 
 def synth_plane(slope_c: int, slope_r: float, n_columns: int, n_rows: int,
                 n_cycle_c: float, n_cycle_r: float, xx_m: np.ndarray,
@@ -253,7 +255,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
         ax_0.set_xlabel(r'$X - Num. Cycles$')
         ax_0.set_ylabel(r'$Y - Num. Cycles$')
         ag_0 = ax_0.pcolormesh(n_cycle_c_vect_f_xx, n_cycle_r_vect_f_yy,
-                               error_array_f, cmap=plt.cm.get_cmap('jet'))
+                               error_array_f, cmap=mpl.colormaps['jet'])
         ax_0.scatter(n_cycle_c_vect_f_xx[ind_min],
                      n_cycle_r_vect_f_yy[ind_min],
                      marker='X', color='m', s=180, label='Minimum MAE')
@@ -291,7 +293,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     ax_1.set_title('Input Interferogram', weight='bold')
     im_1 = ax_1.pcolormesh(clipped_raster * raster_mask,
                            vmin=-np.pi, vmax=np.pi,
-                           cmap=plt.cm.get_cmap('jet'))
+                           cmap=mpl.colormaps['jet'])
     cb_1 = add_colorbar(fig_1, ax_1, im_1)
     cb_1.set_label(label='Rad', weight='bold')
     cb_1.ax.set_xticks([-np.pi, 0, np.pi])
@@ -301,7 +303,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     ax_2 = fig_1.add_subplot(122)
     ax_2.set_title('Estimated Phase Ramp', weight='bold')
     im_2 = ax_2.pcolormesh(synth_wrapped * raster_mask,
-                           cmap=plt.cm.get_cmap('jet'))
+                           cmap=mpl.colormaps['jet'])
     cb_2 = add_colorbar(fig_1, ax_2, im_2)
     cb_2.set_label(label='Rad', weight='bold')
     cb_2.ax.set_xticks([-np.pi, 0, np.pi])
@@ -335,7 +337,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     ax_3.set_title('Input Interferogram', weight='bold')
     im_3a = ax_3.pcolormesh(clipped_raster * raster_mask,
                             vmin=-np.pi, vmax=np.pi,
-                            cmap=plt.cm.get_cmap('jet'))
+                            cmap=mpl.colormaps['jet'])
     cb_3a = add_colorbar(fig_3, ax_3, im_3a)
     cb_3a.set_label(label='Rad', weight='bold')
     cb_3a.ax.set_xticks([-np.pi, 0, np.pi])
@@ -345,7 +347,7 @@ def remove_phase_ramp(path_to_intf: str, cycle_r: int, cycle_c: int,
     ax_3 = fig_3.add_subplot(122)
     ax_3.set_title('Input Phase Field - Phase Ramp', weight='bold')
     im_3b = ax_3.pcolormesh(dd_phase_complex_corrected * raster_mask,
-                            cmap=plt.cm.get_cmap('jet'))
+                            cmap=mpl.colormaps['jet'])
     cb_3b = add_colorbar(fig_3, ax_3, im_3b)
     cb_3b.set_label(label='Rad', weight='bold')
     cb_3b.ax.set_xticks([-np.pi, 0, np.pi])
