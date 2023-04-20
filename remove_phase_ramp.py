@@ -67,6 +67,7 @@ import numpy as np
 import rasterio
 import rasterio.mask
 import datetime
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 # - program dependencies
